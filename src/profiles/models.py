@@ -1,41 +1,40 @@
 from django.db import models
+from django.conf import settings
+from django.utils.functional import cached_property
+
+from .services import SuperHeroWebAPI
 
 
-class Origin(models.Model):
-    superhero = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    origin = models.CharField(max_length=100)
+class BaseProfile(models.Model):
+	USER_TYPES = (
+		(0, 'Ordinary'),
+		(1, 'SuperHero'),
+	)
+	user = models.OneToOneField(settings.AUTH_USER_MODEL,
+								primary_key=True)
+	user_type = models.IntegerField(max_length=1,
+									null=True,
+									choices=USER_TYPES)
+	bio = models.CharField(max_length=256, blank=True, null=True)
 
-    def __str__(self):
-        return "{}'s orgin: {}".format(self.superhero, self.origin)
-
-
-class Location(models.Model):
-    latitude = models.FloatField()
-    longitude = models.FloatField()
-    country = models.CharField(max_length=100)
-
-    def __str__(self):
-        return "{}: ({}, {})".format(self.country,
-                                     self.latitude, self.longitude)
-
-    class Meta:
-        unique_together = ("latitude", "longitude")
+	def __str__(self):
+		return f"{self.user}: {self.bio or '':.20}"
 
 
-class Sighting(models.Model):
-    superhero = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    power = models.CharField(max_length=100)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    sighted_on = models.DateTimeField()
+class SuperHeroProfile(models.Model):
+	origin = models.CharField(max_length=128, blank=True, null=True)
 
-    def __str__(self):
-        return "{}'s power {} sighted at: {} on {}".format(
-            self.superhero,
-            self.power,
-            self.location.country,
-            self.sighted_on)
+	class Meta:
+		abstract = True
 
-    class Meta:
-        unique_together = ("superhero", "power")
+
+class OrdinaryProfile(models.Model):
+	address = models.CharField(max_length=256, blank=True, null)
+
+	class Meta:
+		abstract = True
+
+
+class Profile(SuperHeroProfile, OrdinaryProfile, BaseProfile):
+	pass
+
