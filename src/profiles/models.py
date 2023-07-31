@@ -17,6 +17,9 @@ class BaseProfile(models.Model):
 									choices=USER_TYPES)
 	bio = models.CharField(max_length=256, blank=True, null=True)
 
+    def is_superhero(self):
+        return SuperHeroWebAPI.is_hero(self.user.username)
+
 	def __str__(self):
 		return f"{self.user}: {self.bio or '':.20}"
 
