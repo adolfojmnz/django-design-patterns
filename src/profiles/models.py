@@ -12,10 +12,9 @@ class BaseProfile(models.Model):
 		(1, 'SuperHero'),
 	)
 	user = models.OneToOneField(settings.AUTH_USER_MODEL,
+			     				on_delete=models.CASCADE,
 								primary_key=True)
-	user_type = models.IntegerField(max_length=1,
-									null=True,
-									choices=USER_TYPES)
+	user_type = models.IntegerField(choices=USER_TYPES, null=True)
 	bio = models.CharField(max_length=256, blank=True, null=True)
 
 	def is_superhero(self):
@@ -44,7 +43,7 @@ class SuperHeroProfile(models.Model):
 
 
 class OrdinaryProfile(models.Model):
-	address = models.CharField(max_length=256, blank=True, null)
+	address = models.CharField(max_length=256, blank=True, null=True)
 
 	class Meta:
 		abstract = True
