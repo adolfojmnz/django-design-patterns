@@ -23,6 +23,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     "profiles.apps.ProfilesConfig",
+    "sighting.apps.SightingConfig",
+    "posts.apps.PostsConfig",
 ]
 
 MIDDLEWARE = [
